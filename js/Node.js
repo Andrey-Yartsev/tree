@@ -13,9 +13,12 @@
       this.children = [];
       if (this.data.id) {
         this.id = this.data.id;
+        if (this.id > this.tree.lastId) {
+          this.tree.lastId = this.id;
+        }
       } else {
-        Node.lastId++;
-        this.id = Node.lastId;
+        this.tree.lastId++;
+        this.id = this.tree.lastId;
       }
     }
 
@@ -35,6 +38,29 @@
       return this.data.opened;
     };
 
+    Node.prototype.createChild = function(name) {
+      var node;
+      node = new Node(this.tree, {
+        name: name
+      }, this);
+      this.children.push(node);
+      this.fireChangeEvent();
+      return node;
+    };
+
+    Node.prototype.updateName = function(name) {
+      this.data.name = name;
+      return this.fireChangeEvent();
+    };
+
+    Node.prototype["delete"] = function() {
+      if (!this.parentNode) {
+        throw new Error('can not remove node having no parent');
+      }
+      this.parentNode.deleteChild(this.id);
+      return this.fireChangeEvent();
+    };
+
     Node.prototype.deleteChild = function(id) {
       var child, i, index, j, len, ref;
       if (!this.children.length) {
@@ -48,10 +74,13 @@
           index = i;
         }
       }
-      console.log(index);
       if (index > -1) {
         return this.children.splice(index, 1);
       }
+    };
+
+    Node.prototype.fireChangeEvent = function() {
+      return this.tree.fireChangeEvent();
     };
 
     return Node;

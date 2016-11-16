@@ -3,6 +3,8 @@
   var Tree;
 
   Tree = (function() {
+    Tree.prototype.lastId = 0;
+
     function Tree(items, parent) {
       this.parent = parent || document.getElementsByTagName('body')[0];
       if (items) {
@@ -15,27 +17,35 @@
       return this.root = this.nodes[0];
     };
 
+    Tree.prototype.render = function() {
+      return new NodeRender().html(this.root);
+    };
+
     Tree.prototype.html = function() {
       this.parent.innerHTML = '';
-      return this.parent.appendChild(new NodeRender().html(this.root));
+      return this.parent.appendChild(this.render());
     };
 
     Tree.prototype.json = function() {
-      return JSON.stringify([this.jsonR(this.root)]);
+      return JSON.stringify(this.data());
     };
 
-    Tree.prototype.jsonR = function(node) {
-      var _node, i, json, len, ref;
-      json = node.getData();
+    Tree.prototype.data = function() {
+      return [this.dataR(this.root)];
+    };
+
+    Tree.prototype.dataR = function(node) {
+      var _node, data, i, len, ref;
+      data = node.getData();
       if (node.children.length) {
-        json.children = [];
+        data.children = [];
         ref = node.children;
         for (i = 0, len = ref.length; i < len; i++) {
           _node = ref[i];
-          json.children.push(this.jsonR(_node));
+          data.children.push(this.dataR(_node));
         }
       }
-      return json;
+      return data;
     };
 
     Tree.prototype.onChange = null;

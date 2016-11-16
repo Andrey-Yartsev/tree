@@ -8,7 +8,7 @@ class NodeHtml
     @span = document.createElement('span');
     @span.id = @node.id
 
-    @span.innerHTML = @node.data.name
+    @span.innerHTML = @node.data.name + '(' + @node.id + ')'
     @li.appendChild(@span)
 
     @ul = document.createElement('ul')
@@ -21,11 +21,19 @@ class NodeHtml
     if state != null && state == false
       @ul.style.display = 'none'
 
+    @initControls()
+
+    # events
+    @span.addEventListener 'click', (->
+      this.toggle()
+    ).bind(this)
+
+  initControls: ->
+    # controls
     controls = document.createElement('div');
     controls.className = 'controls';
     @li.appendChild(controls)
 
-    # controls
     #   edit
     @btnEdit = document.createElement('a')
     @btnEdit.href = '#'
@@ -44,20 +52,16 @@ class NodeHtml
       e.preventDefault()
       @createAction()
     ).bind(this)
-    #   delete
-    @btnDelete = document.createElement('a')
-    @btnDelete.href = '#'
-    @btnDelete.innerHTML = 'delete'
-    controls.appendChild(@btnDelete)
-    @btnDelete.addEventListener 'click', ((e)->
-      e.preventDefault()
-      @deleteAction()
-    ).bind(this)
-
-    # events
-    @span.addEventListener 'click', (->
-      this.toggle()
-    ).bind(this)
+    if @node.parentNode
+      #   delete
+      @btnDelete = document.createElement('a')
+      @btnDelete.href = '#'
+      @btnDelete.innerHTML = 'delete'
+      controls.appendChild(@btnDelete)
+      @btnDelete.addEventListener 'click', ((e)->
+        e.preventDefault()
+        @deleteAction()
+      ).bind(this)
 
   updateClass: ->
     className = ''
@@ -65,7 +69,7 @@ class NodeHtml
       className += 'hasChildren'
     if @node.getOpened()
       className += ' opened'
-    @li.className = className
+    @li.className = className.trim()
 
   toggle: ->
     if @node.data.opened
@@ -75,35 +79,25 @@ class NodeHtml
       @node.data.opened = true
       @ul.style.display = 'block'
     @updateClass()
-    @fireChangeEvent()
+    @node.fireChangeEvent()
 
   editAction: ->
     newName = prompt('Edit node name', @node.data.name)
     if newName && newName != @node.data.name
-      @node.data.name = newName
+      @node.updateName(newName)
       @span.innerHTML = newName
-    @fireChangeEvent()
 
   createAction: ->
     newName = prompt('Enter new node name')
     if !newName
       return
-    node = new Node(@node.tree, {
-      name: newName
-    }, @node)
-    @node.children.push(node)
-    new NodeHtml(node, @ul)
+    new NodeHtml(@node.createChild(newName), @ul)
     @node.tree.html()
-    @fireChangeEvent()
 
   deleteAction: ->
-    if @node.parentNode
-      @node.parentNode.deleteChild(@node.id)
+    if @li.parentNode
       @li.parentNode.removeChild(@li)
+    @node.delete()
     @node.tree.html()
-    @fireChangeEvent()
-
-  fireChangeEvent: ->
-    @node.tree.fireChangeEvent()
 
 window.NodeHtml = NodeHtml

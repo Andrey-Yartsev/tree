@@ -1,4 +1,5 @@
 class Tree
+  lastId: 0
   constructor: (items, parent) ->
     @parent = parent || document.getElementsByTagName('body')[0]
     if items
@@ -6,18 +7,22 @@ class Tree
   load: (items) ->
     @nodes = new TreeLoad(this).load(items)
     @root = @nodes[0]
+  render: ->
+    return new NodeRender().html(@root)
   html: ->
     @parent.innerHTML = ''
-    @parent.appendChild(new NodeRender().html(@root))
+    @parent.appendChild(@render())
   json: ->
-    return JSON.stringify([@jsonR(@root)])
-  jsonR: (node) ->
-    json = node.getData()
+    return JSON.stringify(@data())
+  data: ->
+    return [@dataR(@root)]
+  dataR: (node) ->
+    data = node.getData()
     if node.children.length
-      json.children = []
+      data.children = []
       for _node in node.children
-        json.children.push(@jsonR(_node))
-    return json
+        data.children.push(@dataR(_node))
+    return data
   onChange: null
   fireChangeEvent: ->
     if @onChange

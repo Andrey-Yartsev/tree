@@ -3,9 +3,9 @@
   var TreeStored;
 
   TreeStored = (function() {
-    function TreeStored(id, tree) {
+    function TreeStored(id1, tree) {
       var state;
-      this.id = id;
+      this.id = id1;
       this.tree = tree;
       this.tree.onChange = (function() {
         return this.storeState();
@@ -32,6 +32,10 @@
     return TreeStored;
 
   })();
+
+  TreeStored.clean = function(id) {
+    return localStorage.removeItem('tree' + id);
+  };
 
   window.TreeStored = TreeStored;
 

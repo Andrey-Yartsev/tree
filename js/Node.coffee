@@ -5,9 +5,11 @@ class Node
     @children = []
     if @data.id
       @id = @data.id
+      if @id > @tree.lastId
+        @tree.lastId = @id
     else
-      Node.lastId++
-      @id = Node.lastId
+      @tree.lastId++
+      @id = @tree.lastId
   # returns node data in initial format
   getData: ->
     o = {
@@ -24,6 +26,21 @@ class Node
 #      return @data.opened
 #    else
 #      return stored
+  createChild: (name) ->
+    node = new Node(@tree, {
+      name: name
+    }, @)
+    @children.push(node)
+    @fireChangeEvent()
+    return node
+  updateName: (name) ->
+    @data.name = name
+    @fireChangeEvent()
+  delete: ->
+    if !@parentNode
+      throw new Error('can not remove node having no parent')
+    @parentNode.deleteChild(@id)
+    @fireChangeEvent()
   deleteChild: (id) ->
     if !@children.length
       return
@@ -31,9 +48,10 @@ class Node
     for child, i in @children
       if child.id == id
         index = i
-    console.log index
     if index > -1
       @children.splice(index, 1)
+  fireChangeEvent: ->
+    @tree.fireChangeEvent()
 
 Node.lastId = 0
 window.Node = Node

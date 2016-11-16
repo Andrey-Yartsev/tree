@@ -3,15 +3,15 @@
   var NodeHtml;
 
   NodeHtml = (function() {
-    function NodeHtml(node1, parentElement) {
-      var controls, state;
-      this.node = node1;
+    function NodeHtml(node, parentElement) {
+      var state;
+      this.node = node;
       this.li = document.createElement('li');
       parentElement.appendChild(this.li);
       this.li.appendChild(document.createElement('i'));
       this.span = document.createElement('span');
       this.span.id = this.node.id;
-      this.span.innerHTML = this.node.data.name;
+      this.span.innerHTML = this.node.data.name + '(' + this.node.id + ')';
       this.li.appendChild(this.span);
       this.ul = document.createElement('ul');
       this.li.appendChild(this.ul);
@@ -20,6 +20,14 @@
       if (state !== null && state === false) {
         this.ul.style.display = 'none';
       }
+      this.initControls();
+      this.span.addEventListener('click', (function() {
+        return this.toggle();
+      }).bind(this));
+    }
+
+    NodeHtml.prototype.initControls = function() {
+      var controls;
       controls = document.createElement('div');
       controls.className = 'controls';
       this.li.appendChild(controls);
@@ -39,18 +47,17 @@
         e.preventDefault();
         return this.createAction();
       }).bind(this));
-      this.btnDelete = document.createElement('a');
-      this.btnDelete.href = '#';
-      this.btnDelete.innerHTML = 'delete';
-      controls.appendChild(this.btnDelete);
-      this.btnDelete.addEventListener('click', (function(e) {
-        e.preventDefault();
-        return this.deleteAction();
-      }).bind(this));
-      this.span.addEventListener('click', (function() {
-        return this.toggle();
-      }).bind(this));
-    }
+      if (this.node.parentNode) {
+        this.btnDelete = document.createElement('a');
+        this.btnDelete.href = '#';
+        this.btnDelete.innerHTML = 'delete';
+        controls.appendChild(this.btnDelete);
+        return this.btnDelete.addEventListener('click', (function(e) {
+          e.preventDefault();
+          return this.deleteAction();
+        }).bind(this));
+      }
+    };
 
     NodeHtml.prototype.updateClass = function() {
       var className;
@@ -61,7 +68,7 @@
       if (this.node.getOpened()) {
         className += ' opened';
       }
-      return this.li.className = className;
+      return this.li.className = className.trim();
     };
 
     NodeHtml.prototype.toggle = function() {
@@ -73,45 +80,34 @@
         this.ul.style.display = 'block';
       }
       this.updateClass();
-      return this.fireChangeEvent();
+      return this.node.fireChangeEvent();
     };
 
     NodeHtml.prototype.editAction = function() {
       var newName;
       newName = prompt('Edit node name', this.node.data.name);
       if (newName && newName !== this.node.data.name) {
-        this.node.data.name = newName;
-        this.span.innerHTML = newName;
+        this.node.updateName(newName);
+        return this.span.innerHTML = newName;
       }
-      return this.fireChangeEvent();
     };
 
     NodeHtml.prototype.createAction = function() {
-      var newName, node;
+      var newName;
       newName = prompt('Enter new node name');
       if (!newName) {
         return;
       }
-      node = new Node(this.node.tree, {
-        name: newName
-      }, this.node);
-      this.node.children.push(node);
-      new NodeHtml(node, this.ul);
-      this.node.tree.html();
-      return this.fireChangeEvent();
+      new NodeHtml(this.node.createChild(newName), this.ul);
+      return this.node.tree.html();
     };
 
     NodeHtml.prototype.deleteAction = function() {
-      if (this.node.parentNode) {
-        this.node.parentNode.deleteChild(this.node.id);
+      if (this.li.parentNode) {
         this.li.parentNode.removeChild(this.li);
       }
-      this.node.tree.html();
-      return this.fireChangeEvent();
-    };
-
-    NodeHtml.prototype.fireChangeEvent = function() {
-      return this.node.tree.fireChangeEvent();
+      this.node["delete"]();
+      return this.node.tree.html();
     };
 
     return NodeHtml;
