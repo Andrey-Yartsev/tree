@@ -1,0 +1,36 @@
+<head>
+    <script src="js/Node.js"></script>
+    <script src="js/NodeHtml.js"></script>
+    <script src="js/NodeRender.js"></script>
+    <script src="js/NodeStorage.js"></script>
+    <script src="js/TreeLoad.js"></script>
+    <script src="js/Tree.js"></script>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<script>
+    var tree = new Tree([{
+        id: 1,
+        name: "root",
+        opened: true,
+        children: [{
+            id: 2,
+            name: "node1",
+            opened: true
+        }, {
+            id: 3,
+            name: "node2",
+            opened: false,
+            children: [{
+                id: 5,
+                name: "node2.1"
+            }]
+        }, {
+            id: 4,
+            opened: true,
+            name: "node3"
+        }]
+    }]);
+    tree.html();
+</script>
+</body>

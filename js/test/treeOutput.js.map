@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "treeOutput.js",
+  "sourceRoot": "",
+  "sources": [
+    "treeOutput.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,IAAA,GAAO;;EAEP,IAAO,IAAA,IAAA,CAAK,IAAI,CAAC,KAAL,CAAW,IAAX,CAAL,CAAsB,CAAC,IAAvB,CAAA,CAAJ,KAAqC,IAAxC;AACE,UAAU,IAAA,KAAA,CAAM,+BAAN,EADZ;;AAFA"
+}

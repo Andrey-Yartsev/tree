@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "EventTarget.js",
+  "sourceRoot": "",
+  "sources": [
+    "EventTarget.coffee"
+  ],
+  "names": [],
+  "mappings": ";AAAA;;AAAA"
+}

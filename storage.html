@@ -1,0 +1,17 @@
+<head>
+    <script src="js/Node.js"></script>
+    <script src="js/NodeHtml.js"></script>
+    <script src="js/NodeRender.js"></script>
+    <script src="js/NodeStorage.js"></script>
+    <script src="js/TreeLoad.js"></script>
+    <script src="js/Tree.js"></script>
+    <script src="js/TreeStored.js"></script>
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<script>
+    var tree = new Tree([{name: 'root'}]);
+    new TreeStored('a', tree);
+    tree.html();
+</script>
+</body>
